@@ -1,46 +1,27 @@
 import { useState, useEffect } from 'react';
 
 const useFetchCharacters = (url) => {
-    const [characterName, setCharacterName] = useState('');
-    const [characterImage, setCharacterImage] = useState('');
+    const [dataApi, setDataApi] = useState(null);    
 
-    const getCharacters = async () => {
+    const getCharacters = async (url) => {
         try {
             const response = await fetch(url);
+
+            if(!response.ok) throw new Error('No se ha recibido datos');
+            
             const result = await response.json();
-
-            if (result.sprites) {
-
-                const { name, sprites: { other } } = result;
-                const image = other?.dream_world?.front_default;
-
-                return (
-                    setCharacterName(name),
-                    setCharacterImage(image)
-                )
-            }
-
-            const { name, image } = result;
-            console.log(image)
-
-            return (
-                setCharacterName(name),
-                setCharacterImage(image)
-            )
+            setDataApi(result)
 
         } catch (error) {
             console.error('Error: ', error);
-            setCharacterName('');
-            setCharacterImage('');
         }
     }
 
     useEffect(() => {
-        getCharacters()
+        getCharacters(url)
     }, [])
 
-    return { characterName, characterImage };
+    return {dataApi};
 }
-
 
 export default useFetchCharacters;
